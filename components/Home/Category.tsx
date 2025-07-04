@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 
-const Category = () => {
+const Category = ({ category }: { category: (name: string) => void }) => {
   const [categoryList, setCategoryList] = useState<
     DocumentData[] | CategoryTypes[]
   >([]);
@@ -43,9 +43,13 @@ const Category = () => {
       <FlatList
         data={categoryList as CategoryTypes[]}
         numColumns={4}
+        scrollEnabled={false}
         renderItem={({ item, index }) => (
           <TouchableOpacity
-            onPress={() => setSelectedCategory(item?.name)}
+            onPress={() => {
+              setSelectedCategory(item?.name);
+              category(item?.name);
+            }}
             key={index}
             style={{
               flex: 1,
