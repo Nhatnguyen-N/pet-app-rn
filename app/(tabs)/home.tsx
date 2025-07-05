@@ -3,11 +3,13 @@ import PetListByCategory from "@/components/Home/PetListByCategory";
 import Slider from "@/components/Home/Slider";
 import Colors from "@/constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
+  const router = useRouter();
   return (
     <SafeAreaView
       style={{ paddingHorizontal: 20, paddingBottom: 20, marginTop: 20 }}
@@ -19,7 +21,10 @@ const Home = () => {
       {/* PetList + Category */}
       <PetListByCategory />
       {/* Add New Pet Option */}
-      <TouchableOpacity style={styles.addNewPetContainer}>
+      <TouchableOpacity
+        onPress={() => router.push("/add-new-pet")}
+        style={styles.addNewPetContainer}
+      >
         <MaterialIcons name="pets" size={24} color={Colors.PRIMARY} />
         <Text
           style={{

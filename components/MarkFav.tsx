@@ -19,7 +19,7 @@ export default function MarkFav({
   }, [user]);
   const GetFav = async () => {
     const result = await Shared.GetFavList(user);
-    console.log(result);
+    // console.log(result);
     // if (!result) return null;
     setFavList(result?.favorites ? result?.favorites : []);
   };

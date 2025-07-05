@@ -25,6 +25,15 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: "minimal",
             }}
           />
+          <Stack.Screen
+            name="add-new-pet/index"
+            options={{
+              headerShown: true,
+              // headerTransparent: true,
+              headerTitle: "Add New Pet",
+              headerBackButtonDisplayMode: "minimal",
+            }}
+          />
         </Stack>
       </ClerkProvider>
     </SafeAreaProvider>
