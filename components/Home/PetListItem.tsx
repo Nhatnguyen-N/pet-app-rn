@@ -2,7 +2,14 @@ import Colors from "@/constants/Colors";
 import { PetTypes } from "@/types/Pet.types";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import MarkFav from "../MarkFav";
 
 const PetListItem = ({ pet }: { pet: PetTypes }) => {
@@ -28,7 +35,7 @@ const PetListItem = ({ pet }: { pet: PetTypes }) => {
       <Image
         source={{ uri: pet?.imageUrl }}
         style={{
-          width: 150,
+          width: Platform.OS === "ios" ? 140 : 150,
           height: 135,
           objectFit: "cover",
           borderRadius: 10,

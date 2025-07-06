@@ -1,11 +1,20 @@
 import { db } from "@/config/firebaseConfig";
 import Colors from "@/constants/Colors";
 import { CategoryTypes } from "@/types/Category.types";
+import { useUser } from "@clerk/clerk-expo";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { collection, DocumentData, getDocs } from "firebase/firestore";
+import { useRouter } from "expo-router";
+import {
+  collection,
+  doc,
+  DocumentData,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Pressable,
@@ -16,6 +25,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+const cloudinaryConfig = {
+  cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESETS,
+  // api_secret: process.env.CLOUDINARY_API_SECRET,
+};
+
 export default function AddNewPet() {
   const [formData, setFormData] = useState([]);
   const [gender, setGender] = useState<string>();
@@ -24,6 +41,9 @@ export default function AddNewPet() {
   >([]);
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [image, setImage] = useState<string | null>(null);
+  const [loader, setLoader] = useState(false);
+  const { user } = useUser();
+  const router = useRouter();
   useEffect(() => {
     GetCategories();
   }, []);
@@ -51,9 +71,8 @@ export default function AddNewPet() {
       quality: 1,
     });
 
-    // console.log(result);
-
     if (!result.canceled) {
+      console.log(result.assets[0].uri);
       setImage(result.assets[0].uri);
     }
   };
@@ -63,14 +82,62 @@ export default function AddNewPet() {
       Alert.alert("Enter All Detail");
       return;
     }
+
     UploadImage();
   };
   const UploadImage = async () => {
-    // const resp =await fetch(image);
-    // const blobImage = await resp.blob();
-    // const storageRef = ref(storage,"/PetAdopt/"+Date.now()+'.jpg');
-  };
+    setLoader(true);
+    if (!image) {
+      Alert.alert("Image Found");
+      return;
+    }
+    console.log(
+      `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`
+    );
 
+    try {
+      const formData = new FormData();
+      formData.append("file", {
+        uri: image,
+        type: "image/jpg",
+        name: "pet_" + Date.now() + ".jpg",
+      } as any);
+      formData.append("upload_preset", "pet-image");
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/dsq3oy0yz/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error?.message || "Upload failed");
+      console.log("data", data.secure_url);
+      Alert.alert("Success", "Upload thành công!");
+      SaveFormData(data.secure_url);
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      Alert.alert("Error", "Upload thất bại: " + error.message);
+    }
+  };
+  const SaveFormData = async (imageUrl: any) => {
+    const docId = Date.now().toString();
+    await setDoc(doc(db, "Pets", docId), {
+      ...formData,
+      imageUrl: imageUrl,
+      userName: user?.fullName,
+      email: user?.primaryEmailAddress?.emailAddress,
+      userImage: user?.imageUrl,
+      id: docId,
+    });
+    setLoader(false);
+    router.replace("/(tabs)/home");
+  };
   return (
     <ScrollView
       style={{
@@ -206,16 +273,24 @@ export default function AddNewPet() {
           <Picker.Item label="Female" value="Female" />
         </Picker>
       </View>
-      <TouchableOpacity style={styles.button} onPress={onSubmit}>
-        <Text
-          style={{
-            fontFamily: "outfit-medium",
-            fontSize: 18,
-            textAlign: "center",
-          }}
-        >
-          Submit
-        </Text>
+      <TouchableOpacity
+        disabled={loader}
+        style={styles.button}
+        onPress={onSubmit}
+      >
+        {loader ? (
+          <ActivityIndicator size={"large"} />
+        ) : (
+          <Text
+            style={{
+              fontFamily: "outfit-medium",
+              fontSize: 18,
+              textAlign: "center",
+            }}
+          >
+            Submit
+          </Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );

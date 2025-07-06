@@ -35,7 +35,8 @@ const PetListByCategory = () => {
         data={petList as PetTypes[]}
         scrollEnabled={petList.length > 1 ? true : false}
         style={{ marginTop: 10 }}
-        horizontal
+        // horizontal
+        numColumns={2}
         refreshing={loader}
         onRefresh={() => GetPetList("Fish")}
         renderItem={({ item, index }) => <PetListItem pet={item} />}
