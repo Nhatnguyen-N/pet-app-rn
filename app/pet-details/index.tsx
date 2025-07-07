@@ -27,38 +27,51 @@ const PetDetails = () => {
   const pet = useLocalSearchParams();
   const router = useRouter();
   const { user } = useUser();
+
+  // Used to Initiate the chat between two users
   const InitiateChat = async () => {
-    const docId1 = user?.primaryEmailAddress?.emailAddress + "_" + pet?.email;
-    const docId2 = pet?.email + "_" + user?.primaryEmailAddress?.emailAddress;
+    try {
+      const docId1 = user?.primaryEmailAddress?.emailAddress + "_" + pet?.email;
+      const docId2 = pet?.email + "_" + user?.primaryEmailAddress?.emailAddress;
 
-    const q = query(
-      collection(db, "Chat"),
-      where("id", "in", [docId1, docId2])
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      console.log(doc.data());
+      const q = query(
+        collection(db, "Chat"),
+        where("id", "in", [docId1, docId2])
+      );
+      const querySnapshot = await getDocs(q);
 
-      // router.push({
-      //   pathname:"/chat",
-      //   params:{id:doc.id}
-      // })
-    });
-    if (querySnapshot.docs?.length === 0) {
-      await setDoc(doc(db, "Chat", docId1), {
-        id: docId1,
-        users: [
-          {
-            email: user?.primaryEmailAddress?.emailAddress,
-            imageUrl: user?.imageUrl,
-            name: user?.fullName,
-          },
-          {
-            email: pet?.email,
-            imageUrl: userImage,
-          },
-        ],
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data());
+
+        router.push({
+          pathname: "/chat",
+          params: { id: doc.id },
+        });
       });
+      if (querySnapshot.docs?.length === 0) {
+        await setDoc(doc(db, "Chat", docId1), {
+          id: docId1,
+          users: [
+            {
+              email: user?.primaryEmailAddress?.emailAddress,
+              imageUrl: user?.imageUrl,
+              name: user?.fullName,
+            },
+            {
+              email: pet?.email,
+              imageUrl: pet?.userImage,
+              name: pet.userName,
+            },
+          ],
+          userIds: [user?.primaryEmailAddress?.emailAddress, pet?.email],
+        });
+        router.push({
+          pathname: "/chat",
+          params: { id: docId1 },
+        });
+      }
+    } catch (error) {
+      console.log("Error", error);
     }
   };
   return (

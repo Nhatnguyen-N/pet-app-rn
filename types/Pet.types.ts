@@ -11,9 +11,12 @@ export interface PetTypes {
   weight: string,
   userName: string,
   userImage: string,
+  email: string,
+
 }
 export interface UserTypes {
   name: string,
   imageUrl: string,
   email: string,
+  docId: string,
 }

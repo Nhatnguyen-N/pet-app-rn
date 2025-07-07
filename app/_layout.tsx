@@ -34,6 +34,7 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: "minimal",
             }}
           />
+          <Stack.Screen name="chat/index" />
         </Stack>
       </ClerkProvider>
     </SafeAreaProvider>
