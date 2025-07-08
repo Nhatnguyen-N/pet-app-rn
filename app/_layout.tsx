@@ -35,6 +35,13 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen name="chat/index" />
+          <Stack.Screen
+            name="user-post/index"
+            options={{
+              headerBackButtonDisplayMode: "minimal",
+              headerTitle: "User Post",
+            }}
+          />
         </Stack>
       </ClerkProvider>
     </SafeAreaProvider>

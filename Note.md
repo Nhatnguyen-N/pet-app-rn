@@ -5,7 +5,7 @@ day 2:   2:53:47.
 day 3:   3:42:24.
 day 4:   4:00:38.
 day 5:   4:33:24.
-
+day 6:   Done.
 
 backend: firebase.
 signIn: clrek =>> signIn with google.

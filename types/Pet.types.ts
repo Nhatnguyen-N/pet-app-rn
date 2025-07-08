@@ -12,6 +12,7 @@ export interface PetTypes {
   userName: string,
   userImage: string,
   email: string,
+  id: string,
 
 }
 export interface UserTypes {

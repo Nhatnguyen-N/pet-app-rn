@@ -10,7 +10,8 @@ import {
 } from "firebase/firestore";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { GiftedChat, IMessage } from "react-native-gifted-chat";
+import { View } from "react-native";
+import { GiftedChat, IMessage, InputToolbar } from "react-native-gifted-chat";
 export default function ChatScreen() {
   const params = useLocalSearchParams();
   const { user } = useUser();
@@ -55,15 +56,31 @@ export default function ChatScreen() {
     );
   };
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      showUserAvatar={true}
-      user={{
-        _id: user?.primaryEmailAddress?.emailAddress!,
-        name: user?.fullName!,
-        avatar: user?.imageUrl,
-      }}
-    />
+    <View style={{ flex: 1 }}>
+      <GiftedChat
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        showUserAvatar={true}
+        minInputToolbarHeight={60} // Giảm từ mặc định 70px
+        renderInputToolbar={(props) => (
+          <InputToolbar
+            {...props}
+            containerStyle={{
+              marginBottom: 40, // Xóa padding đáy
+              maxHeight: 40,
+            }}
+            primaryStyle={{
+              minHeight: 40, // Chiều cao tối thiểu thực tế
+            }}
+          />
+        )}
+        // Giữ nguyên các props khác
+        user={{
+          _id: user?.primaryEmailAddress?.emailAddress!,
+          name: user?.fullName!,
+          avatar: user?.imageUrl,
+        }}
+      />
+    </View>
   );
 }
